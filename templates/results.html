@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% block content %}
+<div class="mb-4">
+ <a href="/" class="btn btn-secondary">Kembali</a>
+</div>
+
+<h3>Hasil Pencarian: "{{ query }}"</h3>
+
+{% if results %}
+<div class="alert alert-info">Ditemukan {{ results|length }} dokumen relevan</div>
+
+<div class="list-group mt-3">
+ {% for result in results %}
+ <div class="list-group-item list-group-item-action">
+  <div class="d-flex w-100 justify-content-between">
+   <h5 class="mb-1">{{ result.filename }}</h5>
+   <small>Skor: {{ "%0.4f" | format(result.score) }}</small>
+  </div>
+  <p class="mb-1">{{ result.content_preview }}</p>
+  <div class="mt-2">
+   <a href="/uploads/{{ result.filename }}" target="_blank" class="btn btn-sm btn-outline-primary"> Lihat Dokumen </a>
+  </div>
+ </div>
+ {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-warning mt-3">Tidak ditemukan dokumen yang sesuai</div>
+{% endif %} {% endblock %}
