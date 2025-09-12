@@ -1,97 +1,44 @@
-{% extends "base.html" %} {% block content %}
-<div class="container py-4">
-  <div class="row g-4">
-    <div class="col-md-6">
-      <div class="card mb-4">
-        <div class="card-header">
-          <h4>
-            <i class="fas fa-file-upload me-2"></i>
-            Upload Dokumen PDF
-          </h4>
-        </div>
-        <div class="card-body">
-          <form method="POST" enctype="multipart/form-data">
-            <div class="mb-4">
-              <div class="input-group">
-                <input class="form-control" type="file" name="file" accept=".pdf" id="fileInput" />
-              </div>
-              <small class="text-muted mt-2 d-block">Unggah file PDF untuk ditambahkan ke basis data pencarian</small>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">
-              <i class="fas fa-cloud-upload-alt me-2"></i>
-              Upload
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="card mb-4 search-card">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <h4>
-            <i class="fas fa-search me-2"></i>
-            Cari Dokumen
-          </h4>
-        </div>
-        <div class="card-body pt-3">
-          <form action="/search" method="GET">
-            <div class="mb-4">
-              <div class="input-group input-group-lg">
-                <span class="input-group-text bg-transparent border-end-0" style="color: var(--primary-color);">
-                  <i class="fas fa-search"></i>
-                </span>
-                <input 
-                  type="text" 
-                  class="form-control border-start-0" 
-                  name="query" 
-                  placeholder="Masukkan kata kunci..." 
-                  value="{{ request.args.get('query', '') }}"
-                  aria-label="Search documents"
-                  autocomplete="off"
-                  style="background: transparent;"
-                />
-                <button class="btn btn-success px-4" type="submit">
-                  <i class="fas fa-search me-2"></i>
-                  Cari
-                </button>
-              </div>
-              <small class="text-muted mt-2 d-block">Cari dokumen berdasarkan kata kunci yang Anda inginkan</small>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <!-- Upload PDF Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-8 flex flex-col">
+    <h2 class="text-xl font-semibold mb-4">Upload Dokumen PDF</h2>
+    <form method="POST" enctype="multipart/form-data" class="flex flex-col gap-4 flex-1">
+      <input class="block w-full text-sm text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" type="file" name="file" accept=".pdf" id="fileInput" />
+      <small class="text-gray-500 dark:text-gray-400">Unggah file PDF untuk ditambahkan ke basis data pencarian</small>
+      <button type="submit" class="mt-2 w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">Upload</button>
+    </form>
   </div>
 
-  <div class="mt-5">
-    <div class="d-flex align-items-center mb-4">
-      <i class="fas fa-folder-open me-3 fs-4 text-primary"></i>
-      <h5 class="mb-0">Dokumen Tersedia</h5>
-    </div>
-    <div class="card">
-      <div class="card-body p-0">
-        <ul class="list-group list-group-flush">
-          {% for file in files %}
-          <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-            <div class="d-flex align-items-center">
-              <i class="fas fa-file-pdf text-danger me-3"></i>
-              <span>{{ file.name }}</span>
-            </div>
-            <span class="badge bg-primary rounded-pill">
-              <i class="fas fa-weight-hanging me-1"></i>
-              {{ file.size_kb|round(2) }} KB
-            </span>
-          </li>
-          {% else %}
-          <li class="list-group-item text-center p-4">
-            <i class="fas fa-folder-open text-muted mb-3 fs-2"></i>
-            <p class="text-muted mb-0">Belum ada dokumen tersedia</p>
-          </li>
-          {% endfor %}
-        </ul>
+  <!-- Search PDF Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-8 flex flex-col">
+    <h2 class="text-xl font-semibold mb-4">Cari Dokumen</h2>
+    <form action="/search" method="GET" class="flex flex-col gap-4 flex-1">
+      <div class="relative">
+        <input type="text" name="query" placeholder="Masukkan kata kunci..." value="{{ request.args.get('query', '') }}" aria-label="Search documents" autocomplete="off"
+          class="w-full py-2 px-4 pr-24 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow transition">Cari</button>
       </div>
-    </div>
+      <small class="text-gray-500 dark:text-gray-400">Cari dokumen berdasarkan kata kunci yang Anda inginkan</small>
+    </form>
+  </div>
+</div>
+
+<!-- Dokumen List -->
+<div class="max-w-3xl mx-auto mt-12">
+  <h3 class="text-lg font-semibold mb-4">Dokumen Tersedia</h3>
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow divide-y divide-gray-200 dark:divide-gray-700">
+    {% if files %}
+      {% for file in files %}
+        <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+          <span class="truncate text-gray-800 dark:text-gray-100">{{ file.name }}</span>
+          <span class="ml-4 inline-block min-w-[90px] text-center bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 font-semibold rounded-full px-3 py-1 text-xs">{{ file.size_kb|round(2) }} KB</span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="px-6 py-8 text-center text-gray-400">Belum ada dokumen tersedia</div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
